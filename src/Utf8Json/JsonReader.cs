@@ -767,18 +767,19 @@ namespace Utf8Json
 
                 for (int i = offset; i < bytes.Length; i++)
                 {
+                    if (bytes[i] == (char)'\\')
+                    {
+                        i++; // skip escaped chars
+                        if (bytes[i] == (char)'u') // unicode escape
+                        {
+                            i += 4;
+                        }
+                        continue;
+                    }
                     if (bytes[i] == (char)'\"')
                     {
-                        // is escape?
-                        if (bytes[i - 1] == (char)'\\')
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            offset = i + 1;
-                            goto OK;
-                        }
+                        offset = i + 1;
+                        goto OK;
                     }
                 }
                 throw CreateParsingExceptionMessage("not found end string.");
@@ -996,18 +997,19 @@ namespace Utf8Json
                     offset += 1; // position is "\"";
                     for (int i = offset; i < bytes.Length; i++)
                     {
+                        if (bytes[i] == (char)'\\')
+                        {
+                            i++; // skip escaped chars
+                            if (bytes[i] == (char)'u') // unicode escape
+                            {
+                                i+=4;
+                            }
+                            continue;
+                        }
                         if (bytes[i] == (char)'\"')
                         {
-                            // is escape?
-                            if (bytes[i - 1] == (char)'\\')
-                            {
-                                continue;
-                            }
-                            else
-                            {
-                                offset = i + 1;
-                                return; // end
-                            }
+                            offset = i + 1;
+                            return; // end
                         }
                     }
                     throw CreateParsingExceptionMessage("not found end string.");
